@@ -484,7 +484,7 @@ class TrajectoryUtils():
             #  - check documentation for TOPPRA (look for eval() function): https://hungpham2511.github.io/toppra/index.html
             #  - use 'toppra_trajectory' and the predefined sampling step 'sampling_step'
 
-            n_samples = int(toppra_trajectory.duration / sampling_step)
+            n_samples = math.floor(toppra_trajectory.duration / sampling_step)
             ts_sample = np.linspace(0, toppra_trajectory.duration, n_samples)
             samples = toppra_trajectory(ts_sample)
 
