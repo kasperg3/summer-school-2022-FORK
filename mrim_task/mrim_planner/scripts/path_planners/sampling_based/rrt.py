@@ -137,21 +137,26 @@ class RRT:
 
         point       = None
         point_valid = False
-        while not point_valid:
+        failed_samples = 0
 
-            raise NotImplementedError('[STUDENTS TODO] Implement Gaussian sampling in RRT to speed up the process and narrow the paths.')
+        while not point_valid:
+            #raise NotImplementedError('[STUDENTS TODO] Implement Gaussian sampling in RRT to speed up the process and narrow the paths.')
             # Tips:
             #  - sample from Normal distribution: use numpy.random.normal (https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html)
             #  - to prevent deadlocks when sampling continuously, increase the sampling space by inflating the standard deviation of the gaussian sampling
 
-            # STUDENTS TODO: Sample XYZ in the state space
-            x = 0
-            y = 0
-            z = 0
+            if failed_samples > 1 and failed_samples % 5:
+               sigma[0] = sigma[0] * 2.0
+               sigma[1] = sigma[1] * 2.0
+               sigma[2] = sigma[2] * 2.0 # TODO is this sufficient? And why is this causing an overflow
 
+            x = random.gauss(mean[0],sigma[0])
+            y = random.gauss(mean[1],sigma[1])
+            z = random.gauss(mean[2],sigma[2])
             point = Point(x, y, z)
             point_valid = self.pointValid(point)
 
+            failed_samples += 1
         return point.asTuple()
     # # #}
 
@@ -230,14 +235,15 @@ class RRT:
         neighborhood_points = self.getPointsInNeighborhood(point, neighborhood)
         for neighbor in neighborhood_points:
 
-            raise NotImplementedError('[STUDENTS TODO] Getting node parents in RRT* not implemented. You have to finish it.')
+            #raise NotImplementedError('[STUDENTS TODO] Getting node parents in RRT* not implemented. You have to finish it.')
             # Tips:
             #  - look for neighbor which when connected yields minimal path cost all the way back to the start
             #  - you might need functions 'self.tree.get_cost()' or 'distEuclidean()'
 
-            # TODO: fill these two variables
-            cost = float('inf') 
-            parent = closest_point
+            # TODO test whether the distance to goal is sufficient
+            tmp_cost = len(self.tree.find_path(neighbor, self.start))
+            if tmp_cost < cost:
+                cost = tmp_cost
 
         return parent, cost
     # # #}
@@ -289,7 +295,8 @@ class RRT:
     def halveAndTest(self, path):
         pt1 = path[0][0:3]
         pt2 = path[-1][0:3]
-        
+        print("pt1", pt1)
+        print("pt2", pt2)
         if len(path) <= 2:
             return path
 
@@ -298,13 +305,18 @@ class RRT:
         #  - divide the given path by a certain ratio and use this method recursively
 
         if not self.validateLinePath(pt1, pt2, check_bounds=False):
-            
+            # TODO make sure that paths are not colliding with obstacles and have enough clearans
             # [STUDENTS TODO] Replace seg1 and seg2 variables effectively
-            seg1 = path[:1]
-            seg2 = path[1:]
+
+
+            seg1 = path[:len(path)]
+            seg2 = path[len(path):]
 
             seg1.extend(seg2)
-            return seg1
+            if(self.validateLinePath(seg1, pt2, check_bounds=False)):
+                print("test")
+            return self.halveAndTest(seg1)
+
         
         return [path[0], path[-1]]
     # # #}

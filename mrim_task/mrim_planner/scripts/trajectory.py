@@ -8,6 +8,7 @@ import dubins
 
 from utils import *
 
+import numpy as np
 import toppra as ta
 import toppra.constraint as constraint
 import toppra.algorithm as algo
@@ -200,7 +201,10 @@ class TrajectoryUtils():
                 #  - interpolate the heading linearly (create a function of distance between two points of the subpath)
                 #  - do not forget to wrap angle to <-pi, pi) (see/use wrapAngle() in utils.py)
 
+
                 # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
+                #wrapAngle(subtraj_1.heading - subtraj_0.heading)
+
                 hdg_interp = waypoints[0].heading
 
                 # replace heading
@@ -439,17 +443,30 @@ class TrajectoryUtils():
             # Interpolate heading between waypoints
             traj_hdg_interp = self.interpolateHeading(waypoints)
             # Parametrize trajectory
+
+            print("vel lim:", velocity_limits)
+            print("acc lim:", acceleration_limits)
+            # After update:
+                #vel lim: [2.0, 2.0, 2.0, 0.5]
+                #acc lim: [1.5, 1.5, 1.5, 1.0]
+            # Before update:
+                #vel lim: [2.0, 2.0, 1.0, 0.5]
+                #acc lim: [2.0, 2.0, 1.0, 1.0]
+
             toppra_trajectory = self.getParametrizedTrajectory(traj_hdg_interp, velocity_limits, acceleration_limits)
 
             sampling_step = trajectory.dT
 
             # STUDENTS TODO: Sample the path parametrization 'toppra_trajectory' (instance of TOPPRA library).
-            raise NotImplementedError('[STUDENTS TODO] Trajectory sampling not finished. You have to implement it on your own.')
+
+            #raise NotImplementedError('[STUDENTS TODO] Trajectory sampling not finished. You have to implement it on your own.')
             # Tips:
             #  - check documentation for TOPPRA (look for eval() function): https://hungpham2511.github.io/toppra/index.html
             #  - use 'toppra_trajectory' and the predefined sampling step 'sampling_step'
 
-            samples = [] # [STUDENTS TODO] Fill this variable with trajectory samples
+            n_samples = int(toppra_trajectory.duration / sampling_step)
+            ts_sample = np.linspace(0, toppra_trajectory.duration, n_samples)
+            samples = toppra_trajectory(ts_sample)
 
             # Convert to Trajectory class
             poses      = [Pose(q[0], q[1], q[2], q[3]) for q in samples]
@@ -602,8 +619,6 @@ class TrajectoryUtils():
 
         ## |  [COLLISION AVOIDANCE METHOD #2]: Delay UAV with shorter trajectory at start until there is no collision occurring  |
         elif method == 'delay_till_no_collisions_occur':
-
-            raise NotImplementedError('[STUDENTS TODO] Collision prevention method \'delay_till_no_collisions_occur\' not finished. You have to finish it on your own.')
             # Tips:
             #  - you might select which trajectory it is better to delay
             #  - the smallest delay step is the sampling step stored in variable 'self.dT'
@@ -614,21 +629,24 @@ class TrajectoryUtils():
 
             # Decide which UAV should be delayed
             # [STUDENTS TODO] CHANGE BELOW
+
+            # TODO Kasper delay both robots and choose the best solution
             delay_robot_idx, nondelay_robot_idx = 0, 1
 
             # TIP: use function `self.trajectoriesCollide()` to check if two trajectories are in collision
-            collision_flag, collision_idx = \
-                self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx], safety_distance)
+            collision_flag, collision_idx = self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx], safety_distance)
 
             i = 0
             while collision_flag:
-
                 # delay the shorter-trajectory UAV at the start point by sampling period
-
-                if i < 10:
-                    delay_t += delay_step
+                collision_flag, collision_idx = self.trajectoriesCollide(trajectories[delay_robot_idx],
+                                                                         trajectories[nondelay_robot_idx],
+                                                                         safety_distance)
+                if i < 100:
+                    delay_t += delay_step * 5 # TODO tune this parameter
                     # TIP: use function `trajectory.delayStart(X)` to delay a UAV at the start location by X seconds
-                    trajectories[delay_robot_idx].delayStart(delay_step)
+                    trajectories[delay_robot_idx].delayStart(delay_t)
+                    # TODO make sure this is not running infinitely
                 else:
                     collision_flag = False
 
