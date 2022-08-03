@@ -200,7 +200,11 @@ class TrajectoryUtils():
                 # Tips:
                 #  - interpolate the heading linearly (create a function of distance between two points of the subpath)
                 #  - do not forget to wrap angle to <-pi, pi) (see/use wrapAngle() in utils.py)
-
+                n_subtraj_points = int(len(subtraj))
+                print("len_subtraj",len(subtraj))
+                print('subtraj_0',subtraj_0)
+                print('subtraj_1',subtraj_1)
+                hdg_step = d_hdg/(n_subtraj_points-1)
 
                 # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
                 # y = y0+ (x-x0) * y1-y0/x1-x0
@@ -208,7 +212,15 @@ class TrajectoryUtils():
                 #print("headings:", waypoints[idx-1].heading, waypoints[idx].heading)
                 #print("Interpolated heading: ", test)
 
-                hdg_interp = waypoints[0].heading
+                # hdg_interp = waypoints[0].heading
+
+                # hdg_interp = waypoints[0].heading + (i*hdg_step)
+                hdg_interp = hdg_from + hdg_step
+                print("hdg_interp without wrap",hdg_interp)
+                # ---- Wrapping does not make a difference
+                # hdg_interp = wrapAngle(hdg_interp)
+                # print("hdg_interp",hdg_interp)
+                # print("\n")
 
                 # replace heading
                 hdg_from   = hdg_interp
