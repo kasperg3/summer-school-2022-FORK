@@ -137,7 +137,6 @@ class RRT:
 
         point       = None
         point_valid = False
-        failed_samples = 0
 
         while not point_valid:
             #raise NotImplementedError('[STUDENTS TODO] Implement Gaussian sampling in RRT to speed up the process and narrow the paths.')
@@ -145,14 +144,12 @@ class RRT:
             #  - sample from Normal distribution: use numpy.random.normal (https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html)
             #  - to prevent deadlocks when sampling continuously, increase the sampling space by inflating the standard deviation of the gaussian sampling
 
-            # STUDENTS TODO: Sample XYZ in the state space
 
             x = random.gauss(mean[0], sigma[0] + sigma_offset)
             y = random.gauss(mean[1], sigma[1] + sigma_offset)
             z = random.gauss(mean[2], sigma[2] + sigma_offset)
             point = Point(x, y, z)
             point_valid = self.pointValid(point)
-            failed_samples += 1
         return point.asTuple()
     # # #}
 
