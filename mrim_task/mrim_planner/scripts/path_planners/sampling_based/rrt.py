@@ -146,14 +146,10 @@ class RRT:
             #  - to prevent deadlocks when sampling continuously, increase the sampling space by inflating the standard deviation of the gaussian sampling
 
             # STUDENTS TODO: Sample XYZ in the state space
-            #if failed_samples > 5:
-            #    sigma[0] = sigma[0]*2.0
-            #    sigma[1] = sigma[1]*2.0
-            #    sigma[2] = sigma[2]*2.0
 
-            x = random.gauss(mean[0], sigma[0])
-            y = random.gauss(mean[1], sigma[1])
-            z = random.gauss(mean[2], sigma[2])
+            x = random.gauss(mean[0], sigma[0] + sigma_offset)
+            y = random.gauss(mean[1], sigma[1] + sigma_offset)
+            z = random.gauss(mean[2], sigma[2] + sigma_offset)
             point = Point(x, y, z)
             point_valid = self.pointValid(point)
             failed_samples += 1
