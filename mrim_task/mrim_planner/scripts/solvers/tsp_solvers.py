@@ -266,15 +266,35 @@ class TSPSolver3D():
         ## | ------------------- K-Means clustering ------------------- |
         if method == 'kmeans':
             # Prepare positions of the viewpoints in the world
+
             positions = np.array([vp.pose.point.asList() for vp in viewpoints])
 
-            raise NotImplementedError('[STUDENTS TODO] KMeans clustering of viewpoints not implemented. You have to finish it on your own')
+            # raise NotImplementedError('[STUDENTS TODO] KMeans clustering of viewpoints not implemented. You have to finish it on your own')
             # Tips:
             #  - utilize sklearn.cluster.KMeans implementation (https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)
             #  - after finding the labels, you may want to swap the classes (e.g., by looking at the distance of the UAVs from the cluster centers)
+            # print("view_points: ",len(viewpoints))
+            # print("positions: ",positions)
+            kmeans_output = KMeans(n_clusters=k, random_state=0).fit(positions)
+            # print("problem: ",problem.start_poses[0])
+            # print("kmeans_output: ", kmeans_output.labels_)
+            # print("kmeans_centres: ", kmeans_output.cluster_centers_)
+            labels = kmeans_output.labels_
+            print("lables_before: ",labels)
+            # print(kmeans_output.cluster_centers_[0])
+
+            dis_0 = np.linalg.norm([problem.start_poses[0].position.x - kmeans_output.cluster_centers_[0][0], problem.start_poses[0].position.y - kmeans_output.cluster_centers_[0][1], problem.start_poses[0].position.z - kmeans_output.cluster_centers_[0][2]])
+            dis_1 = np.linalg.norm([problem.start_poses[1].position.x - kmeans_output.cluster_centers_[1][0], problem.start_poses[1].position.y - kmeans_output.cluster_centers_[1][1], problem.start_poses[1].position.z - kmeans_output.cluster_centers_[1][2]])
+            if dis_0 < dis_1:
+                labels = [ not x for x in labels ]
+
+            # print("kmeans_output: ",kmeans_output.labels_)
+            # print("labels_after: ",labels)
+
 
             # TODO: fill 1D list 'labels' of size len(viewpoints) with indices of the robots
-            labels = [randint(0, k - 1) for vp in viewpoints]
+
+            # labels = [randint(0, k - 1) for vp in viewpoints]
 
         ## | -------------------- Random clustering ------------------- |
         else:
