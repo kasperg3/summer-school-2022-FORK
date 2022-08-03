@@ -1,5 +1,5 @@
 problem:
-  name: "single_tower.problem" # [single_tower.problem, four_towers_small.problem, four_towers_large.problem]
+  name: "four_towers_large.problem" # [single_tower.problem, four_towers_small.problem, four_towers_large.problem]
   plot: False
 
 # Parameters for Traveling Salesman Problem
@@ -10,14 +10,14 @@ tsp:
 # Parameters for path planning
 path_planner:
   timeout: 40.0              # (s) timeout for single start-to-goal planning
-  method: 'rrtstar'              # [STUDENTS TODO: implement better method than the default] Method for generating start-to-goal paths: [euclidean, astar, rrt (default), rrtstar]
-  straighten_paths: True    # [STUDENTS TODO: implement better method than the default] Path straightening flag (default: false)
+  method: 'rrtstar'              # TODO find a fast and efficient metric
+  straighten_paths: false    # TODO Make this work
 
   # RRT and RRT* method parameters
   rrt:
     branch_size: 1 # (m)
     sampling:
-      method: 'gaussian' # [STUDENTS TODO: implement better method than the default] Method for sampling random points: [uniform (default), gaussian]
+      method: 'gaussian'
       gaussian:
         stddev_inflation: 0.2 # Inflation of standard deviation in all axes during gaussian sampling (m)
     star:

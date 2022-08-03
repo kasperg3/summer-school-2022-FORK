@@ -1,5 +1,5 @@
 import numpy as np
-import random, time
+import random, time, math
 from utils import distEuclidean
 from data_types import Point
 
@@ -325,3 +325,37 @@ class RRT:
     # # #}
 
 # # #}
+#     def halveAndTest(self, path):
+#         pt1 = path[0][0:3]
+#         pt2 = path[-1][0:3]
+#         # If a path has length 2 then it cannot be simplifies further
+#         if len(path) <= 2:
+#             return path
+#
+#         # raise NotImplementedError('[STUDENTS TODO] RRT: path straightening is not finished. Finish it on your own.')
+#         # Tips:
+#         #  - divide the given path by a certain ratio and use this method recursively
+#
+#         if not self.validateLinePath(pt1, pt2, check_bounds=True):
+#             # Divide the path into two segments
+#             seg1 = path[:math.ceil(len(path)/2)]
+#             seg2 = path[math.floor(len(path)/2):]
+#
+#             if self.validateLinePath(seg1[0], seg1[-1], check_bounds=True):
+#                 self.halveAndTest(seg1)
+#             else:
+#                 seg1 = [seg1[0], seg1[-1]]
+#
+#             if self.validateLinePath(seg2[0], seg2[-1], check_bounds=True):
+#                 self.halveAndTest(seg2)
+#             else:
+#                 seg2 = [seg2[0], seg2[-1]]
+#
+#             seg1.extend(seg2)
+#             return seg1
+#
+#         else:
+#             return [path[0], path[-1]]
+#     # # #}
+#
+# # # #}
