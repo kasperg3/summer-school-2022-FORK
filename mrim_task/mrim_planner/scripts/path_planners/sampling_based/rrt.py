@@ -307,11 +307,24 @@ class RRT:
             seg1 = path[:1]
             seg2 = path[1:]
 
+            for i in range(1, len(path)):
+                if not self.validateLinePath(pt1, path[i][0:3], check_bounds=False):
+                    seg1 = path[:i][0:3]
+                    seg2 = path[i:][0:3]
+                    # print("\n>>>> seg1:[%d:%d] , seg2:[%d:%d]]\n" % (0, i, i, len(path)))
+                    # print ('>>>>>pseg2 is feasible== %d' % (self.validateLinePath(seg2[0], seg2[-1], check_bounds=False)))
+                    break
+                # else:
+                #     print(">>>>>path from %d to %d is fine\n" % (0, i))
+
+
             seg1.extend(seg2)
-            if(self.validateLinePath(seg1, pt2, check_bounds=False)):
-                print("test")
-            return self.halveAndTest(seg1)
-        return [path[0], path[-1]]
+            # return self.halveAndTest(seg1)
+            return seg1
+
+        else:
+            print (">>>>> feasible path[0:-1]: no straightening")
+            return [path[0], path[-1]]
     # # #}
 
 # # #}
