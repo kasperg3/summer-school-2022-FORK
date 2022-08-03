@@ -203,7 +203,10 @@ class TrajectoryUtils():
 
 
                 # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
-                #wrapAngle(subtraj_1.heading - subtraj_0.heading)
+                # y = y0+ (x-x0) * y1-y0/x1-x0
+                #test = np.interp(i, [subtraj_0, subtraj_1], [waypoints[idx-1].heading, waypoints[idx].heading])
+                #print("headings:", waypoints[idx-1].heading, waypoints[idx].heading)
+                #print("Interpolated heading: ", test)
 
                 hdg_interp = waypoints[0].heading
 
@@ -630,7 +633,7 @@ class TrajectoryUtils():
 
             delay_step = self.dT
             traj_times = [t.getTime() for t in trajectories]
-            traj_lens  = [t.getLength() for t in trajectories]
+            traj_lens = [t.getLength() for t in trajectories]
 
             # Decide which UAV should be delayed
             # [STUDENTS TODO] CHANGE BELOW
@@ -639,7 +642,8 @@ class TrajectoryUtils():
             delay_robot_idx, nondelay_robot_idx = 0, 1
 
             # TIP: use function `self.trajectoriesCollide()` to check if two trajectories are in collision
-            collision_flag, collision_idx = self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx], safety_distance)
+            collision_flag, collision_idx = self.trajectoriesCollide(trajectories[delay_robot_idx],
+                                                                     trajectories[nondelay_robot_idx], safety_distance)
 
             i = 0
             while collision_flag:
