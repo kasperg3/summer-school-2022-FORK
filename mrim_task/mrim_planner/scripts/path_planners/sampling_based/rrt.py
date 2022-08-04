@@ -52,7 +52,7 @@ class RRT:
 
     # # #{ generatePath()
     def generatePath(self, g_start, g_end, path_planner, rrtstar=False, straighten=False):
-
+        path = []
         print("[INFO] {:s}: Searching for path from [{:.2f}, {:.2f}, {:.2f}] to [{:.2f}, {:.2f}, {:.2f}].".format('RRT*' if rrtstar else 'RRT', g_start[0], g_start[1], g_start[2], g_end[0], g_end[1], g_end[2]))
         self.start = tuple(g_start[0:3])
         self.end   = tuple(g_end[0:3])
@@ -62,21 +62,21 @@ class RRT:
         self.kdtree            = path_planner['obstacles_kdtree']
         self.safety_distance   = path_planner['safety_distance']
         self.timeout           = path_planner['timeout']
-        
+
         self.gaussian_sampling = path_planner['rrt/sampling/method'] == 'gaussian'
         if self.gaussian_sampling:
             self.gaussian_sampling_sigma_inflation = path_planner['rrt/sampling/gaussian/stddev_inflation']
-        
+
         rrtstar_neighborhood = path_planner['rrtstar/neighborhood'] if rrtstar else None
-
-        # build tree
-        self.buildTree(branch_size=path_planner['rrt/branch_size'], rrtstar_neighborhood=rrtstar_neighborhood)
-
-        if not self.tree.valid:
-            return None, None
-
-        # find path
-        path = self.tree.find_path(self.end, g_start[3])
+        if self.validateLinePath(g_start[0:3], g_end[0:3]):
+            path.append((g_start[0], g_start[1], g_start[2], g_start[3]) )
+            path.append((g_end[0], g_end[1], g_end[2], g_start[3]) )
+        else:
+            self.buildTree(branch_size=path_planner['rrt/branch_size'], rrtstar_neighborhood=rrtstar_neighborhood)
+            if not self.tree.valid:
+                return None, None
+            # find path
+            path = self.tree.find_path(self.end, g_start[3])
 
         # smooth the path
         if straighten:
@@ -84,11 +84,9 @@ class RRT:
                 path = self.halveAndTest(path)
 
         distance = 0.0
+        #print('rrt path:', path)
         for i in range(1, len(path)):
             distance += distEuclidean(path[i - 1], path[i])
-
-        # print('rrt path:', path)
-
         return path, distance
     # # #}
 
