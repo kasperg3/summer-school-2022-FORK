@@ -181,7 +181,7 @@ class RRT:
     # # #}
 
     # # #{ validateLinePath()
-    def validateLinePath(self, p_from, p_to, discretization_factor=0.1, check_bounds=True):
+    def validateLinePath(self, p_from, p_to, discretization_factor=0.03, check_bounds=True):
 
         v_from      = np.array([p_from[0], p_from[1], p_from[2]])
         v_to        = np.array([p_to[0], p_to[1], p_to[2]])
@@ -232,9 +232,9 @@ class RRT:
             # Tips:
             #  - look for neighbor which when connected yields minimal path cost all the way back to the start
             #  - you might need functions 'self.tree.get_cost()' or 'distEuclidean()'
+            tmp_cost = self.tree.get_cost(neighbor)
 
             # TODO test whether the distance to goal is sufficient
-            tmp_cost = self.tree.get_cost(neighbor)
             if tmp_cost < cost:
                 cost = tmp_cost
                 parent = neighbor
@@ -297,15 +297,31 @@ class RRT:
         # Tips:
         #  - divide the given path by a certain ratio and use this method recursively
 
-        if not self.validateLinePath(pt1, pt2,check_bounds=True):
+        if not self.validateLinePath(pt1, pt2,discretization_factor=0.03,check_bounds=True):
+            # path_straightening_factor = 2
+            # Divide the path into two segments
+            # seg1 = path[:math.ceil(len(path)/path_straightening_factor )]
+            # seg2 = path[math.ceil(len(path)/path_straightening_factor ):]
+
+            # seg1 = [seg1[0], seg1[-1]] if self.validateLinePath(seg1[0], seg1[-1],check_bounds=True) else self.halveAndTest(seg1)
+            # if not self.validateLinePath(seg1[0], seg1[-1],check_bounds=True):    
+            #     seg2 = [seg1[-1], seg2[-1]] if self.validateLinePath(seg1[-1], seg2[-1],check_bounds=True) else self.halveAndTest(seg2)
+
+            # return [seg1[0],seg1[-1], seg2[0],seg2[-1]]
+
+            # for i in range(len(path)-1,1,-1):
+            #     if self.validateLinePath(pt1, path[i][0:3],check_bounds=True): return [path[0],path[i]]
+
+           
             # Divide the path into two segments
             seg1 = path[:math.ceil(len(path)/2)]
             seg2 = path[math.ceil(len(path)/2):]
 
-            seg1 = [seg1[0], seg1[-1]] if self.validateLinePath(seg1[0], seg1[-1],check_bounds=False) else self.halveAndTest(seg1)
-            seg2 = [seg2[0], seg2[-1]] if self.validateLinePath(seg2[0], seg2[-1],check_bounds=False) else self.halveAndTest(seg2)
+            seg1 = [seg1[0], seg1[-1]] if self.validateLinePath(seg1[0][0:3], seg1[-1][0:3],discretization_factor=0.03,check_bounds=True) else self.halveAndTest(seg1)
+            seg2 = [seg2[0], seg2[-1]] if self.validateLinePath(seg2[0][0:3], seg2[-1][0:3],discretization_factor=0.03,check_bounds=True) else self.halveAndTest(seg2)
 
-            return [seg1[0],seg1[-1], seg2[0],seg2[-1]]
+            return seg1 +  seg2
+
         else:
             return [path[0], path[-1]]
     # # #}
