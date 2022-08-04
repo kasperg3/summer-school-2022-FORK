@@ -11,7 +11,7 @@ tsp:
 path_planner:
   timeout: 40.0              # (s) timeout for single start-to-goal planning
   method: 'rrtstar'              # TODO find a fast and efficient metric
-  straighten_paths: false    # TODO Make this work
+  straighten_paths: true    # TODO Make this work
 
   # RRT and RRT* method parameters
   rrt:
@@ -30,7 +30,7 @@ path_planner:
 # Parameters for path smoothing
 path_smoothing:
   sampling_step: 0.1  # (m)
-  lookahead_dist: 0.3 # (m)
+  lookahead_dist: 0.5 # (m)
 
 # Parameters for sampling the UAVs' trajectories
 trajectory_sampling:
