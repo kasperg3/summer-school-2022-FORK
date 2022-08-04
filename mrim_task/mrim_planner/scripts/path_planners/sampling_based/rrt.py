@@ -179,7 +179,7 @@ class RRT:
     # # #}
 
     # # #{ validateLinePath()
-    def validateLinePath(self, p_from, p_to, discretization_factor=0.03, check_bounds=True):
+    def validateLinePath(self, p_from, p_to, discretization_factor=0.1, check_bounds=True):
 
         v_from      = np.array([p_from[0], p_from[1], p_from[2]])
         v_to        = np.array([p_to[0], p_to[1], p_to[2]])
